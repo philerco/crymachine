@@ -4,8 +4,8 @@ import pygame
 from random import randint
 import threading
 
-print "init pygame"
-pygame.init()
+#print "init pygame"
+#pygame.init()
 
 print "starting..."
 GPIO.setmode(GPIO.BCM)
@@ -23,6 +23,32 @@ GPIO.setup(4 , GPIO.OUT)#audio on  - yellow LED
 GPIO.output(22, True)
 
 #--------------------------
+#Globals
+#--------------------------
+isplaying=0
+
+#--------------------------
+#Run A Sound
+#--------------------------
+def play_sound(filename):
+        global isplaying
+        
+        isplaying=1
+        pygame.init()
+        pygame.mixer.music.load(filename)
+	pygame.mixer.music.play(-1)
+
+#--------------------------
+#Stop A Sound
+#--------------------------
+def stop_sound():
+        global isplaying
+        
+        pygame.init()
+        pygame.mixer.music.stop()
+	pygame.quit()
+
+#--------------------------
 #thread definition for button management
 #--------------------------
 def buttons_management():
@@ -33,29 +59,25 @@ def buttons_management():
 		if input_state == False:
 			print('Button 18 Pressed :  RAZ Button')
 			GPIO.output(4, False)#close light
-			pygame.mixer.music.stop()
-			#pygame.event.wait()
+			stop_sound()
 			time.sleep(0.2)
 		input_state = GPIO.input(24)
 		if input_state == False:
 			print('Button 24 Pressed : baby cry')
 			GPIO.output(4, True)
-			pygame.mixer.music.load("/home/pi/crymachine/python/cry2.wav")#load cry file
-			pygame.mixer.music.play(-1)
-			time.sleep(0.2)
+			play_sound("/home/pi/Projects/crymachine/ressources/cry2.wav")#load cry file
+			time.sleep(1)
 		input_state = GPIO.input(16)
 		if input_state == False:
 			print('Button 16 Pressed : baby laugh')
 			GPIO.output(4, True)
-			pygame.mixer.music.load("/home/pi/crymachine/python/laugh1.wav")#load laugh file
-			pygame.mixer.music.play(-1)
+			play_sound("/home/pi/Projects/crymachine/ressources/laugh1.wav")#load laugh file
 			time.sleep(0.2)
 		input_state = GPIO.input(12)
 		if input_state == False:
 			print('Button 12 Pressed : baby laugh2')
 			GPIO.output(4, True)
-			pygame.mixer.music.load("/home/pi/crymachine/python/laugh2_2.wav")#load cry file
-			pygame.mixer.music.play(-1)
+			play_sound("/home/pi/Projects/crymachine/ressources/laugh2_2.wav")#load cry file
 			time.sleep(0.2)
 	
 #--------------------------
@@ -64,14 +86,13 @@ def buttons_management():
 def random_cry():
 	while True:
 		#wait random number of seconds between 3600*2 seconds and 3600*4 seconds
-		wait_time = randint(3600*2,3600*4)
+		wait_time = randint(1800,3600)
 		print ("random cry : wait :")
 		print (wait_time)
 		time.sleep(wait_time)
 		print('Automatic cry on Baby')
-		pygame.mixer.music.load("/home/pi/crymachine/python/cry2.wav")
+		play_sound("/home/pi/Projects/crymachine/ressources/cry2.wav")
 		GPIO.output(4, True)
-		pygame.mixer.music.play(-1)
 		
 		
 #------------------------------
